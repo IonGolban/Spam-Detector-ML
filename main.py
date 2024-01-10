@@ -22,7 +22,7 @@ path_stop_data = dict()
 
 
 def procces_data(path):
-    imported_data = data_man.import_data_and_labels(path_bare)
+    imported_data = data_man.import_data_and_labels(path)
 
     tokenized_data = data_man.tokenize_data(imported_data)
 
