@@ -12,8 +12,6 @@ def import_data_and_labels(path):
         for file in os.listdir(os.path.join(path, folder)):
             with open(os.path.join(os.path.join(path, folder), file), 'r') as f:
                 data[file] = f.read()
-
-
     return data
 
 
@@ -37,6 +35,5 @@ def stemmer_data(tokens):
     return stemmed_tokens
 
 
-# def
-# def format_data()
-#     pass
+def check_its_spam_msg(name_of_file):
+    return 'spmsga' in name_of_file
