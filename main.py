@@ -112,13 +112,13 @@ def Clasify_New_Instance(data, cond, priori_spam, priori_non_spam, spm, nnspm, t
                 prod_spam *= cond['spam'][word]
             elif word not in cond['spam']:
                 #Aplicam Laplace
-                prod_spam *= (epsilon/(spm+nnspm))
+                prod_spam *= (epsilon/(spm+total))
 
             if word in cond['non_spam']:
                 prod_non_spam *= cond['non_spam'][word]
             elif word not in cond['non_spam']:
                 #Aplicam Laplace
-                prod_non_spam *= (epsilon/(nnspm+spm))
+                prod_non_spam *= (epsilon/(nnspm+total))
 
         posteriori_prob_for_non_spam *= prod_non_spam
         posteriori_prob_for_spam *= prod_spam
