@@ -1,16 +1,30 @@
-# This is a sample Python script.
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from utils import data_man
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+path_bare = r"C:\Users\uig26544\PycharmProjects\Detector-Spam-ML\lingspam_public\bare"
+path_lemm = r"C:\Users\uig26544\PycharmProjects\Detector-Spam-ML\lingspam_public\lemm"
+path_lemm_stop = r"C:\Users\uig26544\PycharmProjects\Detector-Spam-ML\lingspam_public\lemm_stop"
+path_stop = r"C:\Users\uig26544\PycharmProjects\Detector-Spam-ML\lingspam_public\stop"
+
+path_bare_data = dict()
+path_lemm_data = dict()
+path_lemm_stop_data = dict()
+path_stop_data = dict()
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+def procces_data(path):
+    imported_data = data_man.import_data_and_labels(path_bare)
+
+    tokenized_data = data_man.tokenize_data(imported_data)
+
+    filtered_data = data_man.eliminate_stop_words(tokenized_data)
+    return filtered_data
+
+def create_attributes(data):
+    attributes = set()
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+print(procces_data(path_bare))
