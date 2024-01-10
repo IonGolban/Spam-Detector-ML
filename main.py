@@ -4,22 +4,16 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from utils import data_man
 
-#ssl._create_default_https_context = ssl._create_unverified_context
+# ssl._create_default_https_context = ssl._create_unverified_context
 # nltk.data.path.append('/Users/sebastiandluman/Desktop/ML_Project/Spam-Detector-ML/env/nltk_data')
 # nltk.download('punkt')
-#nltk.download('stopwords')
+# nltk.download('stopwords')
 
 
 path_bare = "/Users/sebastiandluman/Desktop/ML_Project/Spam-Detector-ML/lingspam_public/bare/antrenare_bare"
-path_lemm = r"C:\Users\uig26544\PycharmProjects\Detector-Spam-ML\lingspam_public\lemm"
+path_lemm = "/Users/sebastiandluman/Desktop/ML_Project/Spam-Detector-ML/lingspam_public/lemm/antr"
 path_lemm_stop = r"C:\Users\uig26544\PycharmProjects\Detector-Spam-ML\lingspam_public\lemm_stop"
 path_stop = r"C:\Users\uig26544\PycharmProjects\Detector-Spam-ML\lingspam_public\stop"
-
-path_bare_data = dict()
-path_lemm_data = dict()
-path_lemm_stop_data = dict()
-path_stop_data = dict()
-
 
 def procces_data(path):
     imported_data = data_man.import_data_and_labels(path)
@@ -62,8 +56,8 @@ def create_attributes(data):
 
 def Naive_Bayes_Learn(data, mails, spam_mail, non_spam_mails):
     total_number_of_mails = mails
-    priori_prob_of_spam = spam_mail/total_number_of_mails #P(spam)
-    priori_prob_of_non_spam = non_spam_mails/total_number_of_mails #P(non_spam)
+    priori_prob_of_spam = spam_mail/total_number_of_mails #P(spam) priori
+    priori_prob_of_non_spam = non_spam_mails/total_number_of_mails #P(non_spam) priori
 
     unique_words = {}
     number_of_all_spam_words = 0
@@ -87,21 +81,21 @@ def Naive_Bayes_Learn(data, mails, spam_mail, non_spam_mails):
     conditional_propabilities = {}
     conditional_propabilities['spam'] = {}# P(word|spam) = (frecventa_cuvantului + 1)/(frecventa_toate_cuvinte_spam + secventa_toate_cuvinte_dictionar)
     conditional_propabilities['non_spam'] = {}#P(word|non_spam) = (frecventa_cuvantului + 1)/(frecventa_toate_cuvinte_non_spam + secventa_toate_cuvinte_dictionar)
-
+    epsilon = 1e-10
     for key in data['spam']:
-        conditional_propabilities['spam'][key] = (data['spam'][key] + 1)/(number_of_all_spam_words + total_number_of_unique_words)
+        conditional_propabilities['spam'][key] = (data['spam'][key] + epsilon)/(number_of_all_spam_words + total_number_of_unique_words)
 
     for key in data['non_spam']:
-        conditional_propabilities['non_spam'][key] = (data['non_spam'][key] + 1)/(number_of_all_non_spam_words + total_number_of_unique_words)
+        conditional_propabilities['non_spam'][key] = (data['non_spam'][key] + epsilon)/(number_of_all_non_spam_words + total_number_of_unique_words)
 
 
-    return conditional_propabilities, priori_prob_of_spam, priori_prob_of_non_spam
+    return conditional_propabilities, priori_prob_of_spam, priori_prob_of_non_spam, number_of_all_spam_words, number_of_all_non_spam_words, total_number_of_unique_words
 
 
 #calculam probabilitatile posterioare
 #P(spam|email) = P(spam) * prod(P(word_i|spam))
 #P(non_spam|email) = P(non_spam) * prod(P(word_i|non_spam))
-def Clasify_New_Instance(data, cond, priori_spam, priori_non_spam):
+def Clasify_New_Instance(data, cond, priori_spam, priori_non_spam, spm, nnspm, total):
     right_predictions = 0
     total_number_of_instances = 0
     #pentru fiecare email din
@@ -112,16 +106,19 @@ def Clasify_New_Instance(data, cond, priori_spam, priori_non_spam):
         prod_spam = 1
         prod_non_spam = 1
 
+        epsilon = 1e-10
         for word in data[key]:
             if word in cond['spam']:
                 prod_spam *= cond['spam'][word]
-            else:
-                prod_spam = 0
+            elif word not in cond['spam']:
+                #Aplicam Laplace
+                prod_spam *= (epsilon/(spm+nnspm))
 
             if word in cond['non_spam']:
                 prod_non_spam *= cond['non_spam'][word]
-            else:
-                prod_non_spam = 0
+            elif word not in cond['non_spam']:
+                #Aplicam Laplace
+                prod_non_spam *= (epsilon/(nnspm+spm))
 
         posteriori_prob_for_non_spam *= prod_non_spam
         posteriori_prob_for_spam *= prod_spam
@@ -133,24 +130,24 @@ def Clasify_New_Instance(data, cond, priori_spam, priori_non_spam):
         else:
             print(f"Emailul cu numele {key} va fi clasificat ca email non_spam!!")
             if 'spmsga' not in key:
-                right_predictions +=1
+                right_predictions += 1
 
     return right_predictions/total_number_of_instances
 
 
-proc_data, total_mails, total_spam_mails, total_non_spam_mails = procces_data(path_bare)
+proc_data, total_mails, total_spam_mails, total_non_spam_mails = procces_data(path_lemm)
 atributes = create_attributes(proc_data)
 
-cond, priori_spam, priori_non_spam = Naive_Bayes_Learn(atributes, total_mails, total_spam_mails, total_non_spam_mails)
+cond, priori_spam, priori_non_spam, spm, nnspm, total = Naive_Bayes_Learn(atributes, total_mails, total_spam_mails, total_non_spam_mails)
 
 #print(total_mails, total_spam_mails, total_non_spam_mails)
 #print(cond['spam'])
 
 
 #TODO: testare
-path_bare_testare = "/Users/sebastiandluman/Desktop/ML_Project/Spam-Detector-ML/lingspam_public/bare/testari_bare"
+path_bare_testare = "/Users/sebastiandluman/Desktop/ML_Project/Spam-Detector-ML/lingspam_public/lemm/test"
 proc_data_test, _, _, _ = procces_data(path_bare_testare)
 #print(proc_data_test)
 
-accuracy = Clasify_New_Instance(proc_data_test, cond, priori_spam, priori_non_spam)
+accuracy = Clasify_New_Instance(proc_data_test, cond, priori_spam, priori_non_spam, spm, nnspm, total)
 print(f'-------- Acuratetea programului este {round(accuracy * 100, 2)}% --------')
