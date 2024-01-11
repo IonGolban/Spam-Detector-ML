@@ -63,4 +63,4 @@ adaboost_classifier.fit(X_train, y_train)
 predictions = adaboost_classifier.predict(X_test)
 
 accuracy = accuracy_score(y_test, predictions)
-print(f'Acuratețe: {accuracy * 100:.2f}%')
+print(f'Acuratețe Adaboost: {accuracy * 100:.2f}%')

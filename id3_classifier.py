@@ -9,8 +9,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics import accuracy_score
-from dtreeviz.trees import dtreeviz
-
 
 def procces_data(path):
     imported_data = data_man.import_data_and_labels(path)
@@ -67,3 +65,4 @@ predictions = id3_classifier.predict(X_test)
 
 accuracy = accuracy_score(y_test, predictions)
 print(f'Acuratețe ID3: {accuracy * 100:.2f}%')
+
