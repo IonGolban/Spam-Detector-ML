@@ -45,7 +45,7 @@ def proc_data_for_id3(data):
 
     return id3_data
 
-path_lemm_stop = "/Users/sebastiandluman/Desktop/ML_Project/Spam-Detector-ML/lingspam_public/lemm_stop"
+path_lemm_stop = "/Users/sebastiandluman/Desktop/ML_Project/Spam-Detector-ML/lingspam_public/stop"
 proc_data, _, _, _ = procces_data(path_lemm_stop)
 id3_data = proc_data_for_id3(proc_data)
 

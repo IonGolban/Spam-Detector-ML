@@ -46,7 +46,7 @@ def proc_data_for_adaboost(data):
 
     return adaboost_data
 
-path_lemm_stop = "/Users/sebastiandluman/Desktop/ML_Project/Spam-Detector-ML/lingspam_public/lemm_stop"
+path_lemm_stop = "/Users/sebastiandluman/Desktop/ML_Project/Spam-Detector-ML/lingspam_public/stop"
 proc_data, _, _, _ = procces_data(path_lemm_stop)
 adaboost_data = proc_data_for_adaboost(proc_data)
 

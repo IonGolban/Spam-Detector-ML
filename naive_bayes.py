@@ -3,6 +3,8 @@ import ssl
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from utils import data_man
+import matplotlib.pyplot as plt
+
 
 # ssl._create_default_https_context = ssl._create_unverified_context
 # nltk.data.path.append('/Users/sebastiandluman/Desktop/ML_Project/Spam-Detector-ML/env/nltk_data')
@@ -10,10 +12,10 @@ from utils import data_man
 # nltk.download('stopwords')
 
 
-path_bare = "/Users/sebastiandluman/Desktop/ML_Project/Spam-Detector-ML/lingspam_public/bare/antrenare_bare"
-path_lemm = "/Users/sebastiandluman/Desktop/ML_Project/Spam-Detector-ML/lingspam_public/lemm/antr"
-path_lemm_stop = r"C:\Users\uig26544\PycharmProjects\Detector-Spam-ML\lingspam_public\lemm_stop"
-path_stop = r"C:\Users\uig26544\PycharmProjects\Detector-Spam-ML\lingspam_public\stop"
+path_bare = "/Users/sebastiandluman/Desktop/ML_Project/Spam-Detector-ML/lingspam_public/bare_naiv/antrenare_bare"
+path_lemm = "/Users/sebastiandluman/Desktop/ML_Project/Spam-Detector-ML/lingspam_public/lemm_naiv/antr"
+path_lemm_stop = "/Users/sebastiandluman/Desktop/ML_Project/Spam-Detector-ML/lingspam_public/lem_stop_naiv/antr"
+path_stop = "/Users/sebastiandluman/Desktop/ML_Project/Spam-Detector-ML/lingspam_public/stop_naiv/antr"
 
 def procces_data(path):
     imported_data = data_man.import_data_and_labels(path)
@@ -135,7 +137,7 @@ def Clasify_New_Instance(data, cond, priori_spam, priori_non_spam, spm, nnspm, t
     return right_predictions/total_number_of_instances
 
 
-proc_data, total_mails, total_spam_mails, total_non_spam_mails = procces_data(path_lemm)
+proc_data, total_mails, total_spam_mails, total_non_spam_mails = procces_data(path_stop)
 atributes = create_attributes(proc_data)
 
 cond, priori_spam, priori_non_spam, spm, nnspm, total = Naive_Bayes_Learn(atributes, total_mails, total_spam_mails, total_non_spam_mails)
@@ -145,9 +147,22 @@ cond, priori_spam, priori_non_spam, spm, nnspm, total = Naive_Bayes_Learn(atribu
 
 
 #TODO: testare
-path_bare_testare = "/Users/sebastiandluman/Desktop/ML_Project/Spam-Detector-ML/lingspam_public/lemm/test"
+path_bare_testare = "/Users/sebastiandluman/Desktop/ML_Project/Spam-Detector-ML/lingspam_public/stop_naiv/test"
 proc_data_test, _, _, _ = procces_data(path_bare_testare)
 #print(proc_data_test)
 
 accuracy = Clasify_New_Instance(proc_data_test, cond, priori_spam, priori_non_spam, spm, nnspm, total)
 print(f'-------- Acuratetea programului este {round(accuracy * 100, 2)}% --------')
+
+trivial = 0.5
+algoritmi = ['N.B', 'ID3', 'ADABOOST', 'Strategie Trivială']
+acurateti = [accuracy * 100, 0.9586 * 100, 0.9483 * 100, trivial * 100]
+
+plt.bar(algoritmi, acurateti)
+
+plt.xlabel('Algoritmi')
+plt.ylabel('Acuratețe (%)')
+plt.title('Performanța Algoritmilor de Clasificare set: Stop')
+
+# Afișarea graficului
+plt.show()
